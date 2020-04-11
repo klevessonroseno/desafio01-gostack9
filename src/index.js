@@ -1,7 +1,8 @@
-const express = require('express');
+import express from 'express';
+import Project from './models/Projects';
 const port = 8000;
 const app = express();
-const Project = require('./models/Projects');
+
 const projects = [];
 
 app.use(express.json());
