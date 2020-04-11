@@ -6,6 +6,15 @@ const projects = [];
 
 app.use(express.json());
 
+app.use((req, res, next) => {
+    console.time('Request');
+    console.log(`Method: ${req.method} URL: ${req.url}`);
+
+    next();
+
+    console.timeEnd('Request');
+})
+
 function checkIfExistsProjects(req, res, next){
     if(!projects[0]) return res.status(404).json({
         message: 'Not projects found. create a project using POST HTTP method'
