@@ -27,7 +27,9 @@ function checkIfExistsProjectsWithSameId(req, res, next){
     const project = projects.find(project => {
         return project.id == req.body.id;
     });
-    if(project) return res.status(409).json({ message: 'Project alread exists'});
+    if(project) return res.status(409).json({
+        message: 'Project alread exists'
+    });
 
     return next();
 
