@@ -23,6 +23,16 @@ function checkIfExistsProjects(req, res, next){
     return next();
 }
 
+function checkIfExistsProjectsWithSameId(req, res, next){
+    const project = projects.find(project => {
+        return project.id == req.body.id;
+    });
+    if(project) return res.status(409).json({ message: 'Project alread exists'});
+
+    return next();
+
+}
+
 app.get('/projects', checkIfExistsProjects, (req, res) => res.json(projects));
 
 app.get('/projects/:id', (req, res) => {
@@ -32,7 +42,7 @@ app.get('/projects/:id', (req, res) => {
     return res.status(200).json(project);
 })
 
-app.post('/projects', (req, res) => {
+app.post('/projects', checkIfExistsProjectsWithSameId, (req, res) => {
     const { id, title, tasks } = req.body;
     projects.push(new Project(id, title, tasks));
     res.status(201).json(projects);
