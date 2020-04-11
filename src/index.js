@@ -16,6 +16,13 @@ function checkIfExistsProjects(req, res, next){
 
 app.get('/projects', checkIfExistsProjects, (req, res) => res.json(projects));
 
+app.get('/projects/:id', (req, res) => {
+    const project = projects.find(project => {
+        return project.id == req.params.id
+    });
+    return res.status(200).json(project);
+})
+
 app.post('/projects', (req, res) => {
     const { id, title, tasks } = req.body;
     projects.push(new Project(id, title, tasks));
