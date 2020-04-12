@@ -23,15 +23,20 @@ function checkIfExistsProjects(req, res, next){
 }
 
 function checkIfExistsProjectsWithSameId(req, res, next){
+    const { id, title, tasks } = req.body;
     const project = projects.find(project => {
-        return project.id == req.body.id;
+        return project.id == id;
     });
+
     if(project) return res.status(409).json({
         message: 'Project alread exists'
     });
 
+    req.project = new Project(id, title, tasks);
+    
     return next();
 }
+
 function checkIfExistsAttributesAtRequest(req, res, next){
     const { id, title, tasks } = req.body;
 
@@ -69,9 +74,8 @@ routes.get('/projects/:id', checkIfExistsProjectById, (req, res) => {
 });
 
 routes.post('/projects', checkIfExistsProjectsWithSameId, checkIfExistsAttributesAtRequest, (req, res) => {
-    const { id, title, tasks } = req.body;
-    projects.push(new Project(id, title, tasks));
-    res.status(201).json(projects);
+    projects.push(req.project);
+    res.status(201).json(req.project);
 });
 
 export default routes;
