@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import Project from './models/Projects';
+import Project from '../src/models/Projects';
 
 const projects = [];
 
@@ -76,6 +76,20 @@ routes.get('/projects/:id', checkIfExistsProjectById, (req, res) => {
 routes.post('/projects', checkIfExistsProjectsWithSameId, checkIfExistsAttributesAtRequest, (req, res) => {
     projects.push(req.project);
     res.status(201).json(req.project);
+});
+
+routes.put('/projects/:id', (req, res) => {
+
+    const { title, tasks } = req.body;
+    const { id } = req.params;
+
+    let project = projects.find(project => project.id == id );
+
+    project = new Project(id, title, tasks);
+
+    return res.status(204).json({
+        message: 'Project updated'
+    }); 
 });
 
 export default routes;
