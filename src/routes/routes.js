@@ -36,6 +36,15 @@ function checkIfExistsProjectsWithSameId(req, res, next){
     
     return next();
 }
+function checkIfIdIsNumber(req, res, next){
+    let { id } = req.params;
+    
+    if(!(typeof parseInt(id) === 'number')) return res.status(400).json({
+        message: 'The id must be a number'
+    });
+
+    return next();
+}
 
 function checkIfExistsAttributesAtRequest(req, res, next){
     const { id, title, tasks } = req.body;
@@ -69,7 +78,7 @@ function checkIfExistsProjectById(req, res, next){
 
 routes.get('/projects', checkIfExistsProjects, (req, res) => res.json(projects));
 
-routes.get('/projects/:id', checkIfExistsProjectById, (req, res) => {
+routes.get('/projects/:id', checkIfExistsProjectById, checkIfIdIsNumber, (req, res) => {
     res.status(200).json(req.project)
 });
 
@@ -78,7 +87,7 @@ routes.post('/projects', checkIfExistsProjectsWithSameId, checkIfExistsAttribute
     res.status(201).json(req.project);
 });
 
-routes.put('/projects/:id', (req, res) => {
+routes.put('/projects/:id', checkIfIdIsNumber,(req, res) => {
 
     const { title, tasks } = req.body;
     const { id } = req.params;
