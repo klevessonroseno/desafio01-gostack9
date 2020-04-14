@@ -101,4 +101,25 @@ routes.put('/projects/:id', checkIfIdIsNumber,(req, res) => {
     }); 
 });
 
+routes.delete('/projects/:id', (req, res) => {
+    const { id } = req.params;
+    const project = projects.find(project => {
+        return project.id == id;
+    });
+
+    if(!project) return res.status(404).json({
+        message: 'Project not found'
+    });
+
+    projects.splice(projects.findIndex(project => {
+        return project.id === id;
+    }), 1);
+
+    return res.status(204).json({
+        message: 'Project deleted'
+    });
+    
+
+});
+
 export default routes;
