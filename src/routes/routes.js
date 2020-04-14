@@ -34,10 +34,19 @@ function checkIfExistsProjectsWithSameId(req, res, next){
     return next();
 }
 
-function checkIfExistsAttributesAtRequest(req, res, next){
+function checkIfExistsAllAttributesAtRequest(req, res, next){
     const { id, title, tasks } = req.body;
 
     if(( !id || !title ) || !tasks) return res.status(400).json(errorDetails[3]);
+
+    return next();
+}
+function checkIfExistsNameAndTitleAtRequest(req, res, next){
+    const { title, tasks } = req.body;
+
+    if(!title || !tasks) return res.status(400).json({
+        message: 'id and tasks attributes are required'
+    });
 
     return next();
 }
@@ -66,12 +75,12 @@ routes.get('/projects/:id', checkIfExistsProjectById, (req, res) => {
     res.status(200).json(req.project);
 });
 
-routes.post('/projects', checkIfExistsProjectsWithSameId, checkIfExistsAttributesAtRequest, (req, res) => {
+routes.post('/projects', checkIfExistsProjectsWithSameId, checkIfExistsAllAttributesAtRequest, (req, res) => {
     projects.push(req.project);
     res.status(201).json(req.project);
 });
 
-routes.put('/projects/:id', (req, res) => {
+routes.put('/projects/:id', checkIfExistsProjectById, checkIfExistsNameAndTitleAtRequest, (req, res) => {
 
     const { title, tasks } = req.body;
     const { id } = req.params;
