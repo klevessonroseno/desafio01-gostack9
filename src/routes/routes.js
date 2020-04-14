@@ -44,9 +44,7 @@ function checkIfExistsAllAttributesAtRequest(req, res, next){
 function checkIfExistsNameAndTitleAtRequest(req, res, next){
     const { title, tasks } = req.body;
 
-    if(!title || !tasks) return res.status(400).json({
-        message: 'id and tasks attributes are required'
-    });
+    if(!title || !tasks) return res.status(400).json(errorDetails[4]);
 
     return next();
 }
@@ -84,14 +82,11 @@ routes.put('/projects/:id', checkIfExistsProjectById, checkIfExistsNameAndTitleA
 
     const { title, tasks } = req.body;
     const { id } = req.params;
+    const projectId = projects.findIndex(project => project.id = id);
+    
+    projects[projectId] = new Project(id, title, tasks);
 
-    let project = projects.find(project => project.id == id );
-
-    project = new Project(id, title, tasks);
-
-    return res.status(204).json({
-        message: 'Project updated'
-    }); 
+    return res.status(200).json(projects[projectId]); 
 });
 
 routes.delete('/projects/:id', checkIfExistsProjectById, (req, res) => {
