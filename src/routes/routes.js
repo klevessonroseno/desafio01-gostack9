@@ -115,7 +115,7 @@ routes.delete('/projects/:id', (req, res) => {
         return project.id === id;
     }), 1);
 
-    return res.status(204).json({
+    return res.status(202).json({
         message: 'Project deleted'
     });
     
