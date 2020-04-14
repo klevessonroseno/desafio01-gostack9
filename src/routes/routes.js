@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import Project from '../models/Projects';
+import errorDetails from '../models/ErrorDetails';
 
 const projects = [];
 
@@ -15,9 +16,7 @@ routes.use((req, res, next) => {
 });
 
 function checkIfExistsProjects(req, res, next){
-    if(!projects[0]) return res.status(404).json({
-        message: 'Not projects found. create a project using POST HTTP method'
-    });
+    if(!projects[0]) return res.status(404).json(errorDetails[1]);
 
     return next();
 }
@@ -28,30 +27,17 @@ function checkIfExistsProjectsWithSameId(req, res, next){
         return project.id == id;
     });
 
-    if(project) return res.status(409).json({
-        message: 'Project alread exists'
-    });
+    if(project) return res.status(409).json(errorDetails[2]);
 
     req.project = new Project(id, title, tasks);
     
-    return next();
-}
-function checkIfIdIsNumber(req, res, next){
-    let { id } = req.params;
-    
-    if(!(typeof parseInt(id) === 'number')) return res.status(400).json({
-        message: 'The id must be a number'
-    });
-
     return next();
 }
 
 function checkIfExistsAttributesAtRequest(req, res, next){
     const { id, title, tasks } = req.body;
 
-    if(( !id || !title ) || !tasks) return res.status(400).json({
-        message: 'The id, title and tasks attributes are required'
-    });
+    if(( !id || !title ) || !tasks) return res.status(400).json(errorDetails[3]);
 
     return next();
 }
@@ -63,9 +49,7 @@ function checkIfExistsProjectById(req, res, next){
         return project.id == id;
     });
 
-    if(!project) return res.status(404).json({
-        message: 'Project not found'
-    });
+    if(!project) return res.status(404).json(errorDetails[0]);
 
     req.project = new Project(
         project.id,
@@ -78,7 +62,7 @@ function checkIfExistsProjectById(req, res, next){
 
 routes.get('/projects', checkIfExistsProjects, (req, res) => res.json(projects));
 
-routes.get('/projects/:id', checkIfExistsProjectById, checkIfIdIsNumber, (req, res) => {
+routes.get('/projects/:id', checkIfExistsProjectById, (req, res) => {
     res.status(200).json(req.project)
 });
 
@@ -87,7 +71,7 @@ routes.post('/projects', checkIfExistsProjectsWithSameId, checkIfExistsAttribute
     res.status(201).json(req.project);
 });
 
-routes.put('/projects/:id', checkIfIdIsNumber,(req, res) => {
+routes.put('/projects/:id', (req, res) => {
 
     const { title, tasks } = req.body;
     const { id } = req.params;
@@ -101,7 +85,7 @@ routes.put('/projects/:id', checkIfIdIsNumber,(req, res) => {
     }); 
 });
 
-routes.delete('/projects/:id', (req, res) => {
+routes.delete('/projects/:id', checkIfExistsProjectById, (req, res) => {
     const { id } = req.params;
     const project = projects.find(project => {
         return project.id == id;
@@ -117,9 +101,24 @@ routes.delete('/projects/:id', (req, res) => {
 
     return res.status(202).json({
         message: 'Project deleted'
-    });
-    
+    }); 
+});
 
+routes.post('/projects/:id/tasks', (req, res) => {
+    const { id } = req.params;
+    const { title } = req.body;
+
+    const project = projects.find(project => {
+        project.id == id;
+    });
+
+   // project.tasks[0] = title
+
+    res.status(202).json({
+        message: 'title created',
+        nameTitle: title,
+        project: project
+    });
 });
 
 export default routes;
