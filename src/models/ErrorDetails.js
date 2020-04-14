@@ -1,7 +1,7 @@
 class ErrorDetails {
-    constructor(_title, _status, _errordate, _developerMessage){
+    constructor(_title, _httpStatusCode, _errordate, _developerMessage){
         this.title = _title;
-        this.status = _status;
+        this.httpStatusCode = _httpStatusCode;
         this.errorDate = _errordate;
         this.developerMessage = _developerMessage;
     }

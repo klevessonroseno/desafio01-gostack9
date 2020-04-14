@@ -63,7 +63,7 @@ function checkIfExistsProjectById(req, res, next){
 routes.get('/projects', checkIfExistsProjects, (req, res) => res.json(projects));
 
 routes.get('/projects/:id', checkIfExistsProjectById, (req, res) => {
-    res.status(200).json(req.project)
+    res.status(200).json(req.project);
 });
 
 routes.post('/projects', checkIfExistsProjectsWithSameId, checkIfExistsAttributesAtRequest, (req, res) => {
