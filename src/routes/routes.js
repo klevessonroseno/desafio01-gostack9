@@ -108,21 +108,14 @@ routes.delete('/projects/:id', checkIfExistsProjectById, (req, res) => {
     }); 
 });
 
-routes.post('/projects/:id/tasks', (req, res) => {
-    const { id } = req.params;
+routes.post('/projects/:id/tasks', checkIfExistsProjectById, (req, res) => {
     const { title } = req.body;
+    const { id } = req.params;
+    const projectId = projects.findIndex(project => project.id == id);
 
-    const project = projects.find(project => {
-        project.id == id;
-    });
-
-   // project.tasks[0] = title
-
-    res.status(202).json({
-        message: 'title created',
-        nameTitle: title,
-        project: project
-    });
+    projects[projectId].tasks.push(title);
+    
+    res.json(projects[projectId].tasks);
 });
 
 export default routes;
