@@ -67,6 +67,15 @@ function checkIfExistsProjectById(req, res, next){
     return next();
 }
 
+function chechIfExistsTitleAtRequest(req, res, next){
+    const { title } = req.body;
+    if(!title) return res.status(400).json({
+        message: 'The title attribute is requered'
+    });
+
+    return next();
+}
+
 routes.get('/projects', checkIfExistsProjects, (req, res) => res.json(projects));
 
 routes.get('/projects/:id', checkIfExistsProjectById, (req, res) => {
@@ -108,7 +117,7 @@ routes.delete('/projects/:id', checkIfExistsProjectById, (req, res) => {
     }); 
 });
 
-routes.post('/projects/:id/tasks', checkIfExistsProjectById, (req, res) => {
+routes.post('/projects/:id/tasks', checkIfExistsProjectById, chechIfExistsTitleAtRequest,(req, res) => {
     const { title } = req.body;
     const { id } = req.params;
     const projectId = projects.findIndex(project => project.id == id);
