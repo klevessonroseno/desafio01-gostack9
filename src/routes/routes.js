@@ -69,9 +69,7 @@ function checkIfExistsProjectById(req, res, next){
 
 function chechIfExistsTitleAtRequest(req, res, next){
     const { title } = req.body;
-    if(!title) return res.status(400).json({
-        message: 'The title attribute is requered'
-    });
+    if(!title) return res.status(400).json(errorDetails[5]);
 
     return next();
 }

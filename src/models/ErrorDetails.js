@@ -37,6 +37,12 @@ const errorDetails = [
         400,
         new Date(),
         'It is necessary to pass title and tasks in the request body'
+    ),
+    new ErrorDetails(
+        'The title attribute is required',
+        400,
+        new Date(),
+        'It is necessary to pass title attribute in the request body'
     )
 ];
 
