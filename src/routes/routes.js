@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import Project from '../models/Projects';
-import errorDetails from '../models/ErrorDetails';
+import * as mid from '../middlewares/middlewares';
+
 
 const projects = [];
 
@@ -15,77 +16,18 @@ routes.use((req, res, next) => {
     console.timeEnd('Request');
 });
 
-function checkIfExistsProjects(req, res, next){
-    if(!projects[0]) return res.status(404).json(errorDetails[1]);
+routes.get('/projects', mid.checkIfExistsProjects, (req, res) => res.json(projects));
 
-    return next();
-}
-
-function checkIfExistsProjectsWithSameId(req, res, next){
-    const { id, title, tasks } = req.body;
-    const project = projects.find(project => {
-        return project.id == id;
-    });
-
-    if(project) return res.status(409).json(errorDetails[2]);
-
-    req.project = new Project(id, title, tasks);
-    
-    return next();
-}
-
-function checkIfExistsAllAttributesAtRequest(req, res, next){
-    const { id, title, tasks } = req.body;
-
-    if(( !id || !title ) || !tasks) return res.status(400).json(errorDetails[3]);
-
-    return next();
-}
-function checkIfExistsNameAndTitleAtRequest(req, res, next){
-    const { title, tasks } = req.body;
-
-    if(!title || !tasks) return res.status(400).json(errorDetails[4]);
-
-    return next();
-}
-
-function checkIfExistsProjectById(req, res, next){
-    const { id } = req.params;
-
-    const project = projects.find(project => {
-        return project.id == id;
-    });
-
-    if(!project) return res.status(404).json(errorDetails[0]);
-
-    req.project = new Project(
-        project.id,
-        project.title,
-        project.tasks
-    );
-
-    return next();
-}
-
-function chechIfExistsTitleAtRequest(req, res, next){
-    const { title } = req.body;
-    if(!title) return res.status(400).json(errorDetails[5]);
-
-    return next();
-}
-
-routes.get('/projects', checkIfExistsProjects, (req, res) => res.json(projects));
-
-routes.get('/projects/:id', checkIfExistsProjectById, (req, res) => {
+routes.get('/projects/:id', mid.checkIfExistsProjectById, (req, res) => {
     res.status(200).json(req.project);
 });
 
-routes.post('/projects', checkIfExistsProjectsWithSameId, checkIfExistsAllAttributesAtRequest, (req, res) => {
+routes.post('/projects', mid.checkIfExistsProjectsWithSameId, mid.checkIfExistsAllAttributesAtRequest, (req, res) => {
     projects.push(req.project);
     res.status(201).json(req.project);
 });
 
-routes.put('/projects/:id', checkIfExistsProjectById, checkIfExistsNameAndTitleAtRequest, (req, res) => {
+routes.put('/projects/:id', mid.checkIfExistsProjectById, mid.checkIfExistsNameAndTitleAtRequest, (req, res) => {
 
     const { title, tasks } = req.body;
     const { id } = req.params;
@@ -96,7 +38,7 @@ routes.put('/projects/:id', checkIfExistsProjectById, checkIfExistsNameAndTitleA
     return res.status(200).json(projects[projectId]); 
 });
 
-routes.delete('/projects/:id', checkIfExistsProjectById, (req, res) => {
+routes.delete('/projects/:id', mid.checkIfExistsProjectById, (req, res) => {
     const { id } = req.params;
     const project = projects.find(project => {
         return project.id == id;
@@ -115,7 +57,7 @@ routes.delete('/projects/:id', checkIfExistsProjectById, (req, res) => {
     }); 
 });
 
-routes.post('/projects/:id/tasks', checkIfExistsProjectById, chechIfExistsTitleAtRequest,(req, res) => {
+routes.post('/projects/:id/tasks', mid.checkIfExistsProjectById, mid.checkIfExistsTitleAtRequest,(req, res) => {
     const { title } = req.body;
     const { id } = req.params;
     const projectId = projects.findIndex(project => project.id == id);
